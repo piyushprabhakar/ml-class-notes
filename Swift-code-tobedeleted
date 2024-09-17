@@ -1,1 +1,83 @@
 
+import UIKit
+
+class MyTableViewController: UITableViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    // Number of sections in your table view
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 3 // Example: 3 sections
+    }
+
+    // Number of rows per section
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 5 // Example: 5 rows per section
+    }
+    
+    // Provide cell content
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.text = "Row \(indexPath.row)"
+        return cell
+    }
+    
+    // Provide a custom header view for specific sections
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .clear
+        
+        if section == 1 {
+            // Calculate the total height of the section
+            let sectionHeight = calculateSectionHeight(section: section)
+            
+            // Create an overlay view with dynamic height
+            let overlayView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: sectionHeight))
+            overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.5) // Semi-transparent overlay
+            
+            headerView.addSubview(overlayView)
+        }
+        
+        return headerView
+    }
+    
+    // Set height for header
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 1 {
+            return calculateSectionHeight(section: section) // Dynamic height for the overlay
+        }
+        return 40 // Default header height for other sections
+    }
+    
+    // Function to calculate the total height of the section
+    func calculateSectionHeight(section: Int) -> CGFloat {
+        var totalHeight: CGFloat = 0
+        
+        // Add header height if needed
+        totalHeight += self.tableView(tableView, heightForHeaderInSection: section)
+        
+        // Add heights of all rows in the section
+        let numberOfRows = self.tableView(tableView, numberOfRowsInSection: section)
+        for row in 0..<numberOfRows {
+            totalHeight += self.tableView(tableView, heightForRowAt: IndexPath(row: row, section: section))
+        }
+        
+        // Add footer height if needed
+        totalHeight += self.tableView(tableView, heightForFooterInSection: section)
+        
+        return totalHeight
+    }
+    
+    // Set height for individual rows
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44 // Example row height
+    }
+    
+    // Set height for footer (optional)
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0 // Example: no footer
+    }
+}
